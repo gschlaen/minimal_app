@@ -70,7 +70,7 @@ class _LoginFormState extends State<_LoginForm> {
                 : () async {
                     FocusScope.of(context).unfocus();
                     final loginSucces = await authProvider.login(emailController.text.trim(), passwordController.text.trim());
-
+                    print(emailController.text.trim() + '' + passwordController.text.trim());
                     if (loginSucces) {
                       Navigator.pushReplacementNamed(context, 'clients');
                     } else {

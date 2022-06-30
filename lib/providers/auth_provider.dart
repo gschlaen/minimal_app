@@ -19,17 +19,18 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  static Future<String> getToken() async {
-    const _storage = FlutterSecureStorage();
-    final token = await _storage.read(key: 'token');
-    return token!;
-  }
+  // static Future<String> getToken() async {
+  //   const _storage = FlutterSecureStorage();
+  //   final token = await _storage.read(key: 'token');
+  //   return token!;
+  // }
 
   Future<bool> login(String email, String password) async {
     authenticating = true;
+    notifyListeners();
     final data = {
-      'email': 'email',
-      'password': 'password',
+      'email': email,
+      'password': password,
     };
     final resp = await http.post(Uri.parse('${Environment.baseUrl}/mia-auth/login'), body: jsonEncode(data), headers: {
       'Content-Type': 'application/json',
@@ -37,6 +38,7 @@ class AuthProvider extends ChangeNotifier {
 
     final loginResponse = LoginResponse.fromJson(resp.body);
     authenticating = false;
+    notifyListeners();
 
     if (loginResponse.success) {
       await _saveToken(loginResponse.user!.accessToken);

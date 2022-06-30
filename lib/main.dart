@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
         'loading': (_) => const LoadingScreen(),
         'clients': (_) => const ClientsScreen(),
       },
-      initialRoute: 'clients',
+      initialRoute: 'loading',
     );
   }
 }

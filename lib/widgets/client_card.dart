@@ -69,6 +69,7 @@ class _SettingsPopupButton extends StatelessWidget {
                     leading: const Icon(Icons.delete, color: Colors.white),
                     title: const Text('Delete', style: TextStyle(color: Colors.white, fontSize: 16)),
                     onTap: () {
+                      clientProvider.selectedClient = client;
                       clientProvider.deleteClient(clientProvider.selectedClient.id!);
                       Navigator.pop(context);
                     }),

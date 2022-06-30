@@ -14,6 +14,7 @@ class SearchBar extends StatefulWidget {
 
 class _SearchBarState extends State<SearchBar> {
   final _controller = TextEditingController();
+  final FocusNode focus = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +29,7 @@ class _SearchBarState extends State<SearchBar> {
           shape: StadiumBorder(side: BorderSide(color: Colors.grey[500]!)),
         ),
         child: TextField(
+          focusNode: focus,
           autocorrect: false,
           keyboardType: TextInputType.text,
           controller: _controller,
@@ -53,6 +55,9 @@ class _SearchBarState extends State<SearchBar> {
                     onPressed: () {
                       _controller.text = '';
                       searchBarProvider.textLength = 0;
+                      focus.requestFocus();
+                      clientsProvider.limit = 5;
+                      clientsProvider.loadClients();
                     },
                   )
                 : const SizedBox(),
