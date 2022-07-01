@@ -16,10 +16,11 @@ class ClientsProvider extends ChangeNotifier {
 
   final storage = const FlutterSecureStorage();
 
-  File? newPictureFile;
+  File? photoFile;
 
   bool isLoading = true;
   bool isSaving = false;
+  bool isSearchByQuery = false;
 
   ClientsProvider() {
     loadClients();
@@ -27,6 +28,7 @@ class ClientsProvider extends ChangeNotifier {
 
   loadClients() async {
     isLoading = true;
+    isSearchByQuery = false;
     notifyListeners();
 
     final resp = await http.post(Uri.parse('${Environment.baseUrl}/client/list?limit=$limit'), body: jsonEncode({}), headers: {
@@ -80,6 +82,38 @@ class ClientsProvider extends ChangeNotifier {
     return client.id!;
   }
 
+  void updateSelectedClientImage(String path) {
+    selectedClient.photo = path;
+    photoFile = File.fromUri(Uri(path: path));
+
+    notifyListeners();
+  }
+
+  Future<String?> uploadImage() async {
+    if (photoFile == null) return null;
+
+    isSaving = true;
+    notifyListeners();
+
+    final url = Uri.parse('https://api.cloudinary.com/v1_1/dsxi65tbk/image/upload?upload_preset=ubhnx9go');
+    final imageUploadRequest = http.MultipartRequest('POST', url);
+    final file = await http.MultipartFile.fromPath('file', photoFile!.path);
+
+    imageUploadRequest.files.add(file);
+
+    final streamResponse = await imageUploadRequest.send();
+    final resp = await http.Response.fromStream(streamResponse);
+    isSaving = false;
+
+    if (resp.statusCode != 200 && resp.statusCode != 201) {
+      return null;
+    }
+
+    photoFile = null;
+    final decodedData = json.decode(resp.body);
+    return decodedData['secure_url'];
+  }
+
   deleteClient(int id) async {
     await http.delete(Uri.parse('${Environment.baseUrl}/client/remove/$id'));
     clients.removeWhere((element) => element.id == id);
@@ -88,6 +122,7 @@ class ClientsProvider extends ChangeNotifier {
 
   searchByQuery(String query) async {
     isLoading = true;
+    isSearchByQuery = true;
     notifyListeners();
 
     final resp = await http.post(Uri.parse('${Environment.baseUrl}/client/list?limit=$total'), body: jsonEncode({}), headers: {
@@ -100,7 +135,7 @@ class ClientsProvider extends ChangeNotifier {
     clients = totalClients
         .where((element) => element.firstname.toLowerCase().contains(query) || element.lastname.toLowerCase().contains(query))
         .toList();
-    // isLoading = false;
+    isLoading = false;
     notifyListeners();
   }
 }

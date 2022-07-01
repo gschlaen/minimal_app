@@ -56,8 +56,8 @@ class _SearchBarState extends State<SearchBar> {
                       _controller.text = '';
                       searchBarProvider.textLength = 0;
                       focus.requestFocus();
-                      clientsProvider.limit = 5;
-                      clientsProvider.loadClients();
+                      // clientsProvider.limit = 5;
+                      // clientsProvider.loadClients();
                     },
                   )
                 : const SizedBox(),

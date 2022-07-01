@@ -10,11 +10,10 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageBackground(
-      assetName: 'assets/background-login.png',
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: LoginBackground(
+        child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,11 +69,11 @@ class _LoginFormState extends State<_LoginForm> {
                 : () async {
                     FocusScope.of(context).unfocus();
                     final loginSucces = await authProvider.login(emailController.text.trim(), passwordController.text.trim());
-                    print(emailController.text.trim() + '' + passwordController.text.trim());
                     if (loginSucces) {
                       Navigator.pushReplacementNamed(context, 'clients');
                     } else {
-                      showAlert(context, 'Login error', 'Please check your credentials');
+                      showAlert(context, 'Login error', 'Please check your credentials',
+                          onPressedOkButton: () => Navigator.pop(context));
                     }
                   },
           ),

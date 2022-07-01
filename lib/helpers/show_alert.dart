@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'package:minimal_app/themes/app_theme.dart';
 
-showAlert(BuildContext context, String title, String subtitle) {
+showAlert(BuildContext context, String title, String subtitle,
+    {void Function()? onPressedCancelButton, void Function()? onPressedOkButton}) {
   if (Platform.isAndroid) {
     return showDialog(
       barrierDismissible: false,
@@ -15,9 +16,16 @@ showAlert(BuildContext context, String title, String subtitle) {
         content: Text(subtitle),
         actions: [
           MaterialButton(
+            child: const Text('Cancel', style: TextStyle(fontSize: 14)),
+            elevation: 5,
+            disabledTextColor: Colors.white,
+            textColor: Colors.grey,
+            onPressed: onPressedCancelButton,
+          ),
+          MaterialButton(
             child: const Text('Ok', style: TextStyle(color: Colors.white)),
             color: AppTheme.primary,
-            onPressed: () => Navigator.pop(context),
+            onPressed: onPressedOkButton,
           )
         ],
       ),

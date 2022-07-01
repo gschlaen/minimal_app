@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import 'package:minimal_app/helpers/show_custom_snack_bar.dart';
 import 'package:minimal_app/providers/providers.dart';
 import 'package:minimal_app/widgets/widgets.dart';
 
@@ -33,9 +35,22 @@ class ClientForm extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 radius: 69.5,
                 backgroundImage: const AssetImage('assets/no-image.png'),
-                child: CircleAvatar(
-                  radius: 67.5,
-                  backgroundImage: selectedClient.photoImage,
+                child: GestureDetector(
+                  child: CircleAvatar(
+                    radius: 67.5,
+                    backgroundImage: selectedClient.photoImage,
+                  ),
+                  onTap: () async {
+                    final picker = ImagePicker();
+                    final XFile? pickedFile = await picker.pickImage(
+                      source: ImageSource.gallery,
+                      imageQuality: 100,
+                    );
+
+                    if (pickedFile == null) return;
+
+                    clientProvider.updateSelectedClientImage(pickedFile.path);
+                  },
                 ),
               ),
               const SizedBox(height: 19),
@@ -80,8 +95,17 @@ class ClientForm extends StatelessWidget {
               onPressed: clientProvider.isSaving
                   ? null
                   : () async {
+                      print(selectedClient.photo);
+                      if (!selectedClient.photo.startsWith('http') && !selectedClient.photo.startsWith('assets')) {
+                        final String? photoUrl = await clientProvider.uploadImage();
+                        if (photoUrl != null) {
+                          clientProvider.selectedClient.photo = photoUrl;
+                        }
+                      }
                       await clientProvider.saveOrCreateClient(selectedClient);
                       Navigator.pop(context);
+
+                      showCustomSnackBar(context, title);
                     },
             ),
           ),

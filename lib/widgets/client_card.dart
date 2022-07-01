@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:minimal_app/helpers/show_alert.dart';
+import 'package:minimal_app/helpers/show_custom_snack_bar.dart';
 import 'package:provider/provider.dart';
 
 import 'package:minimal_app/models/models.dart';
@@ -22,7 +24,7 @@ class ClientCard extends StatelessWidget {
           side: const BorderSide(color: Color.fromRGBO(26, 26, 26, 1)), borderRadius: BorderRadius.circular(20)),
       child: ListTile(
           contentPadding: const EdgeInsets.only(top: 10, bottom: 10, left: 15),
-          leading: CircleAvatar(radius: 25, backgroundImage: client.photoImage),
+          leading: CircleAvatar(radius: 25, backgroundImage: client.photoImageClientCard),
           title:
               Text(client.firstname + ' ' + client.lastname, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
           subtitle: Text(client.email, style: const TextStyle(fontSize: 12)),
@@ -70,8 +72,18 @@ class _SettingsPopupButton extends StatelessWidget {
                     title: const Text('Delete', style: TextStyle(color: Colors.white, fontSize: 16)),
                     onTap: () {
                       clientProvider.selectedClient = client;
-                      clientProvider.deleteClient(clientProvider.selectedClient.id!);
                       Navigator.pop(context);
+                      showAlert(
+                        context,
+                        'Attention',
+                        'You are about to delete a client. Are you sure you want to continue?',
+                        onPressedOkButton: () {
+                          clientProvider.deleteClient(clientProvider.selectedClient.id!);
+                          showCustomSnackBar(context, '');
+                          Navigator.pop(context);
+                        },
+                        onPressedCancelButton: () => Navigator.pop(context),
+                      );
                     }),
               ),
             ]);

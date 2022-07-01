@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 
@@ -21,15 +22,22 @@ class Client {
   String lastname;
   String email;
   final String? address;
-  final String photo;
+  String photo;
   final String? caption;
   final DateTime? createdAt;
   final DateTime? updatedAt;
   final int? deleted;
 
   get photoImage {
-    if (photo != '') return NetworkImage(photo);
-    return const AssetImage('assets/no-user-image.jpg');
+    if (photo == '') return const AssetImage('assets/no-image.png');
+    if (photo.startsWith('http')) return NetworkImage(photo);
+    return FileImage(File(photo));
+  }
+
+  get photoImageClientCard {
+    if (photo == '') return const AssetImage('assets/no-user-image.jpg');
+    if (photo.startsWith('http')) return NetworkImage(photo);
+    return FileImage(File(photo));
   }
 
   factory Client.fromJson(String str) => Client.fromMap(json.decode(str));
